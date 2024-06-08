@@ -1,0 +1,75 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:CollisionSceneBinaryUI.ViewModels"
+        xmlns:m="using:CollisionSceneBinaryUI.Models"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="450"
+		Width="500" Height="450"
+        xmlns:treeGrid="clr-namespace:Avalonia.Controls.TreeDataGrid;
+		assembly=Avalonia.Controls"
+        x:Class="CollisionSceneBinaryUI.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+	   Loaded="Window_Loaded_1"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="CollisionSceneBinaryUI">
+
+    <Design.DataContext>
+        <!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+        <vm:MainWindowViewModel/>
+    </Design.DataContext>
+
+	<Grid RowDefinitions="30 *">
+		<Menu Grid.Row="0">
+			<MenuItem Header="File">
+				<MenuItem Header="Open" Click="OpenFile_Click" />
+				<MenuItem Header="Save" Click="SaveFile_Click" />
+			</MenuItem>
+			<MenuItem Header="Export Model" Click="Export_Click">
+			</MenuItem>
+			<MenuItem Name="gameSelectorDropdown" Header="Game Select">
+				<MenuItem Name="gameSelect1" Header="PMTTYD" Click="SelectGame_Click" IsSelected="True" />
+				<MenuItem Name="gameSelect2" Header="Origami King" Click="SelectGame_Click" />
+				<MenuItem Name="gameSelect3" Header="Color Splash" Click="SelectGame_Click" />
+			</MenuItem>
+		</Menu>
+
+		<Grid Grid.Row="1" ColumnDefinitions="* *">
+
+			<TreeDataGrid Source="{Binding Tree.Source}" >
+
+				<TreeDataGrid.Styles>
+					<Style Selector="TreeViewItem" x:DataType="m:TreeNode">
+						<Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}"/>
+					</Style>
+				</TreeDataGrid.Styles>
+			</TreeDataGrid>
+
+
+			<Panel Grid.Column="1">
+				<StackPanel>
+					<ComboBox Height="22" Width="200"
+					  SelectedItem="{Binding AttributeName, Mode=TwoWay}"
+					  ItemsSource="{Binding Attributes}">
+					</ComboBox>
+						<ComboBox Height="22" Width="200"
+							  SelectedItem="{Binding SelectedCollisionFlag, Mode=TwoWay}"
+							  ItemsSource="{Binding CollisionFlags}">
+					</ComboBox>
+					<ListBox ItemsSource="{Binding FlagProperties}">
+						<ListBox.ItemTemplate>
+							<DataTemplate>
+								<StackPanel Orientation="Horizontal">
+									<Button Content="X" Click="Buttom_RemoveFlag_Click" Tag="{Binding}"
+											Width="30" Height="30" VerticalAlignment="Center" />
+									<TextBlock Margin="10 0" Text="{Binding}"/>
+								</StackPanel>
+							</DataTemplate>
+						</ListBox.ItemTemplate>
+					</ListBox>
+				</StackPanel>
+			</Panel>
+		</Grid>
+	</Grid>
+</Window>
