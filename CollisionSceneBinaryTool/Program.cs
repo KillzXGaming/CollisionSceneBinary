@@ -8,8 +8,6 @@ namespace CollisionSceneBinaryCLI
     {
         public static void Main(string[] args)
         {
-            args = new string[] { "mri_05.csb.zst" };
-
             if (args.Length == 0 || args.Contains("-h"))
             {
                 Console.WriteLine($"Usage:");
@@ -18,10 +16,13 @@ namespace CollisionSceneBinaryCLI
 
                 Console.WriteLine($"Arguments:");
                 Console.WriteLine($"-big (big endian, needed for color splash)");
+                Console.WriteLine($"-mobj (create as map object)");
+
                 return;
             }
 
             bool is_big_endian = args.Contains("-big");
+            bool is_map_object = args.Contains("-mobj");
 
             foreach (string arg in args)
             {
@@ -47,7 +48,7 @@ namespace CollisionSceneBinaryCLI
 
                     var output_name = Path.GetFileNameWithoutExtension(arg);
                     var dir = Path.GetDirectoryName(arg);
-                    CsbImporter.Import(arg, output_name, dir, is_big_endian);
+                    CsbImporter.Import(arg, output_name, dir, is_big_endian, is_map_object);
                 }
             }
         }

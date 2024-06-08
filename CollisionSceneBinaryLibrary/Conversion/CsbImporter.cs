@@ -46,11 +46,12 @@ namespace CollisionSceneBinaryTool
             public CtbFile CollisionTable;
         }
 
-        public static void Import(string filePath, string name, string output_folder, bool is_big_endian = false)
+        public static void Import(string filePath, string name, string output_folder,
+            bool is_big_endian = false, bool is_map_object = false)
         {
             Console.WriteLine($"Loading file data");
 
-            var results = ImportFromDae(filePath);
+            var results = ImportFromDae(filePath, is_map_object);
 
             {
                 var mem = new MemoryStream();
@@ -73,11 +74,11 @@ namespace CollisionSceneBinaryTool
             }
         }
 
-        public static ImportResults ImportFromDae(string filePath)
+        public static ImportResults ImportFromDae(string filePath, bool is_map_object = false)
         {
             var csb = new CsbFile();
             var scene = IOManager.LoadScene(filePath, new IONET.ImportSettings());
-            var settings = new ImportSettings();
+            var settings = new ImportSettings() { IsMapObject = is_map_object };
 
             foreach (var mesh in scene.Models[0].Meshes)
             {
