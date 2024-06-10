@@ -63,7 +63,8 @@ namespace CollisionSceneBinaryUI.ViewModels
         public string AttributeName
         {
             get { return _attributeName; }
-            set { 
+            set
+            {
                 SetProperty(ref _attributeName, value);
                 UpdateProperties();
             }
@@ -75,7 +76,8 @@ namespace CollisionSceneBinaryUI.ViewModels
         public int AttributeID
         {
             get { return _attributeID; }
-            set { 
+            set
+            {
                 SetProperty(ref _attributeID, value);
 
                 string name = ((CsbFile.MatAttributeTTYD)_attributeID).ToString();
@@ -134,17 +136,25 @@ namespace CollisionSceneBinaryUI.ViewModels
             string folder = Path.GetDirectoryName(path);
             string name = Path.GetFileNameWithoutExtension(path);
 
+            //save collision scene
             if (CollisionScene != null)
             {
                 var mem = new MemoryStream();
                 CollisionScene.Save(mem, as_big_endian);
-                File.WriteAllBytes(Path.Combine(folder, $"{name}.csb.zst"), Zstd.Compress(mem.ToArray()));
+                if (as_big_endian) //big endian (color splash) has no compression
+                    File.WriteAllBytes(Path.Combine(folder, $"{name}.csb"), mem.ToArray());
+                else
+                    File.WriteAllBytes(Path.Combine(folder, $"{name}.csb.zst"), Zstd.Compress(mem.ToArray()));
             }
+            //save collision octree table
             if (CollisionTable != null)
             {
                 var mem = new MemoryStream();
                 CollisionTable.Save(mem, as_big_endian);
-                File.WriteAllBytes(Path.Combine(folder, $"{name}.ctb.zst"), Zstd.Compress(mem.ToArray()));
+                if (as_big_endian) //big endian (color splash) has no compression
+                    File.WriteAllBytes(Path.Combine(folder, $"{name}.ctb"), mem.ToArray());
+                else
+                    File.WriteAllBytes(Path.Combine(folder, $"{name}.ctb.zst"), Zstd.Compress(mem.ToArray()));
             }
         }
 
@@ -187,7 +197,7 @@ namespace CollisionSceneBinaryUI.ViewModels
             //Load objects to attach as tree nodes
             foreach (var obj in csb.Objects)
             {
-                nodes[(int)obj.NodeIndex].Name = obj.Name;   
+                nodes[(int)obj.NodeIndex].Name = obj.Name;
             }
 
             //Load meshes to attach as tree nodes
@@ -243,7 +253,8 @@ namespace CollisionSceneBinaryUI.ViewModels
                 return;
 
             this.AttributeID = (int)Enum.Parse(typeof(CsbFile.MatAttributeTTYD), AttributeName);
-            foreach (var node in Tree.SelectedNodes) {
+            foreach (var node in Tree.SelectedNodes)
+            {
                 node.AttributeID = this.AttributeID;
             }
         }
@@ -278,7 +289,7 @@ namespace CollisionSceneBinaryUI.ViewModels
                 this.FlagProperties.Add(this.CollisionFlags[f]);
         }
 
-        public void ReloadGame( )
+        public void ReloadGame()
         {
             Attributes.Clear();
             CollisionFlags.Clear();
