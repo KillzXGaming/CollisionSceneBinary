@@ -20,7 +20,8 @@ namespace CollisionSceneBinaryTool
         private uint Unknown = 1;
         private ushort Unknown3 = 2;
 
-        private uint Unknown2 = 32762;
+        private byte Unknown4 = 0xFE;
+        private byte Unknown5 = 0x7;
 
         public BoundingBox SubModelBounding = new BoundingBox(); //min max vec3
 
@@ -72,7 +73,7 @@ namespace CollisionSceneBinaryTool
             public BoundingBox Bounding = new BoundingBox(); //min max vec3
 
             //Default name when meshes are combined into one model buffer
-            public string Name = "DEADBEEF"; 
+            public string Name = "DEADBEEF";
 
             public List<Mesh> Meshes = new List<Mesh>();
 
@@ -97,7 +98,8 @@ namespace CollisionSceneBinaryTool
 
             public Mesh() { }
 
-            public Mesh(string name) {
+            public Mesh(string name)
+            {
                 Name = name;
             }
         }
@@ -111,7 +113,8 @@ namespace CollisionSceneBinaryTool
 
         public void Save(string path, bool bigEndian = false)
         {
-            using (var fs = new FileStream(path, FileMode.Create, FileAccess.Write)) {
+            using (var fs = new FileStream(path, FileMode.Create, FileAccess.Write))
+            {
                 Save(fs, bigEndian);
             }
         }
@@ -189,7 +192,8 @@ namespace CollisionSceneBinaryTool
                 Objects[i].NodeIndex = object_indices[i];
 
                 using (reader.BaseStream.TemporarySeek
-                    (object_string_table_pos + object_name_offsets[i], SeekOrigin.Begin)) {
+                    (object_string_table_pos + object_name_offsets[i], SeekOrigin.Begin))
+                {
                     Objects[i].Name = reader.ReadZeroTerminatedString();
                 }
             }
@@ -226,7 +230,7 @@ namespace CollisionSceneBinaryTool
                 {
                     ID = reader.ReadUInt16(), //id
                     Flags = reader.ReadByte(), //flag,
-                    NumChildren = reader.ReadByte(), 
+                    NumChildren = reader.ReadByte(),
                 });
             }
 
@@ -238,7 +242,8 @@ namespace CollisionSceneBinaryTool
                 meshes[i].NodeIndex = mesh_node_ids[i];
                 meshes[i].ColFlag = flag_array[i];
 
-                using (reader.BaseStream.TemporarySeek(string_offset + name_offsets[i], SeekOrigin.Begin)) {
+                using (reader.BaseStream.TemporarySeek(string_offset + name_offsets[i], SeekOrigin.Begin))
+                {
                     meshes[i].Name = reader.ReadZeroTerminatedString();
                 }
             }
@@ -253,7 +258,7 @@ namespace CollisionSceneBinaryTool
                 reader.ReadUInt32(); //id always 0
                 if (!isVersion1)
                     reader.ReadUInt64(); //0
-  
+
                 reader.ReadUInt32(); //0
                 reader.ReadUInt32(); //0
 
@@ -335,7 +340,10 @@ namespace CollisionSceneBinaryTool
             }
 
             reader.ReadUInt32(); //0
-            Unknown2 = reader.ReadUInt32(); //32760 - 32767. Flags?
+            Unknown4 = reader.ReadByte();
+            Unknown5 = reader.ReadByte();
+            reader.ReadUInt16(); //0
+
             uint num_split_models = reader.ReadUInt32();
             SubModelBounding.Read(reader);
 
@@ -547,7 +555,7 @@ namespace CollisionSceneBinaryTool
                 writer.Write(model.Unknown5);
                 writer.Write(model.Positions.Count);
                 writer.Write(model.Triangles.Count);
-                writer.Write(model.Zero); 
+                writer.Write(model.Zero);
                 writer.Write(model.Translate);
                 writer.Write(model.Rotation);
                 model.Bounding.Write(writer);
@@ -563,7 +571,10 @@ namespace CollisionSceneBinaryTool
                 if (model.Name == "DEADBEEF") //DEADBEEF model where it has model list and total bounding of sub models
                 {
                     writer.Write(0);
-                    writer.Write(Unknown2);
+                    writer.Write(Unknown4);
+                    writer.Write(Unknown5);
+                    writer.Write((ushort)0);
+
                     //sub models
                     writer.Write(Models.Count - 1);
                     SubModelBounding.Write(writer);
@@ -755,14 +766,14 @@ namespace CollisionSceneBinaryTool
             COL_FLAG_IGNORE_NPCWEAPON_MASK = 1UL << 62,
             COL_FLAG_IGNORE_HARIKO_MASK = 1UL << 63,
             COL_FLAG_IGNORE_PARTY_MASK = 1UL << 64,
-         /*   COL_FLAG_IGNORE_ITEM_MASK = 1UL << 65,
-            COL_FLAG_IGNORE_HINT_MASK = 1UL << 66,
-            COL_FLAG_IGNORE_PLAYER_VEHICLE_MASK = 1UL << 67,
-            COL_FLAG_IGNORE_VEHICLE_WHEEL_MASK = 1UL << 68,
-            COL_FLAG_IGNORE_UNCOLLECTABLEPAPER_MASK = 1UL << 69,
-            COL_FLAG_IGNORE_HOLE_SURFACE_MASK = 1UL << 70,
-            COL_FLAG_AUGOGEN_MASK = 1UL << 71,
-            COL_FLAG_IGNORE_SLANTING = 1UL << 72,*/
+            /*   COL_FLAG_IGNORE_ITEM_MASK = 1UL << 65,
+               COL_FLAG_IGNORE_HINT_MASK = 1UL << 66,
+               COL_FLAG_IGNORE_PLAYER_VEHICLE_MASK = 1UL << 67,
+               COL_FLAG_IGNORE_VEHICLE_WHEEL_MASK = 1UL << 68,
+               COL_FLAG_IGNORE_UNCOLLECTABLEPAPER_MASK = 1UL << 69,
+               COL_FLAG_IGNORE_HOLE_SURFACE_MASK = 1UL << 70,
+               COL_FLAG_AUGOGEN_MASK = 1UL << 71,
+               COL_FLAG_IGNORE_SLANTING = 1UL << 72,*/
         }
 
         public enum MatAttributeTTYD
