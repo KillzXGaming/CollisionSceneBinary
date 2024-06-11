@@ -475,7 +475,10 @@ namespace CollisionSceneBinaryTool
             //Additional models don't use a combined buffer
             var meshes = this.Models[0].Meshes.ToList();
 
-            writer.Write((ushort)Unknown3); //unk
+            if (isVersion1)
+                writer.Write((ushort)1);
+            else
+                writer.Write((ushort)Unknown3); //unk
             writer.Write((ushort)1); //1
             writer.Write(meshes.Count); //mesh count
             //name offsets
@@ -534,7 +537,10 @@ namespace CollisionSceneBinaryTool
             }
             foreach (var model in Models)
             {
-                writer.Write(model.Unknown0);  //3
+                if (isVersion1)
+                    writer.Write(2);  //3 or 2 (color splash)
+                else
+                    writer.Write(model.Unknown0);  //3 or 2 (color splash)
                 writer.Write((ushort)model.NodeIndex);
                 writer.Write((ushort)0);
 
